@@ -1,4 +1,4 @@
-#define _WIN32_WINNT 0x0500
+#include <sdkddkver.h>
 #include <stdio.h>
 #include <Windows.h>
 #include <shlwapi.h>
@@ -12,7 +12,7 @@ typedef struct _ParamsReadOnly
 	TCHAR* pCmdLineOrig;
 	TCHAR* pCmdLine;
 	SIZE_T dwLen;
-	int hExceptionHandler;
+	PVOID hExceptionHandler;
 } ParamsReadOnly;
 
 typedef struct _ParamsNoAccessDuringExec
@@ -125,6 +125,7 @@ int WINAPI wWinMain(
 			&pNAE->stPI,
 			sizeof(pNAE->stPI)
 		);
+		pNAE->stSI.dwFlags = STARTF_FORCEOFFFEEDBACK;
 		if (!CreateProcess(
 			NULL,
 			pRO->pCmdLine,
@@ -198,7 +199,7 @@ int WINAPI wWinMain(
 		{
 			return 0xC;
 		}
-		//Sleep(999);
+		Sleep(60000);
 		if (!VirtualProtect(
 			pRO,
 			sizeof(ParamsReadOnly),
